@@ -2,34 +2,34 @@
 /*
 Copyright (c) 2002-2010, Michael Bretterklieber <michael@bretterklieber.com>
 All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
+ 
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions 
 are met:
-
-1. Redistributions of source code must retain the above copyright
+ 
+1. Redistributions of source code must retain the above copyright 
    notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
+2. Redistributions in binary form must reproduce the above copyright 
+   notice, this list of conditions and the following disclaimer in the 
    documentation and/or other materials provided with the distribution.
-3. The names of the authors may not be used to endorse or promote products
+3. The names of the authors may not be used to endorse or promote products 
    derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-This code cannot simply be copied and put under the GNU Public License or
+ 
+This code cannot simply be copied and put under the GNU Public License or 
 any other GPL-like (LGPL, GPL2) License.
 
-    $Id$
+    $Id: CHAP.php 302857 2010-08-28 21:12:59Z mbretter $
 */
 
 require_once 'PEAR.php';
@@ -43,7 +43,7 @@ require_once 'PEAR.php';
 * @package Crypt_CHAP
 * @author  Michael Bretterklieber <michael@bretterklieber.com>
 * @access  public
-* @version $Revision$
+* @version $Revision: 302857 $
 */
 
 /**
@@ -51,9 +51,9 @@ require_once 'PEAR.php';
  *
  * Abstract base class for CHAP
  *
- * @package Crypt_CHAP
+ * @package Crypt_CHAP 
  */
-class Crypt_CHAP extends PEAR
+class Crypt_CHAP extends PEAR 
 {
     /**
      * Random binary challenge
@@ -65,7 +65,7 @@ class Crypt_CHAP extends PEAR
      * Binary response
      * @var  string
      */
-    var $response = null;
+    var $response = null;    
 
     /**
      * User password
@@ -78,25 +78,19 @@ class Crypt_CHAP extends PEAR
      * @var  integer
      */
     var $chapid = 1;
-
+    
     /**
      * Constructor
      *
      * Generates a random challenge
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->generateChallenge();
-    }
-
     function Crypt_CHAP()
     {
-        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
-        self::__construct();
+        $this->PEAR();
+        $this->generateChallenge();
     }
-
+    
     /**
      * Generates a random binary challenge
      *
@@ -117,11 +111,11 @@ class Crypt_CHAP extends PEAR
      * Generates the response. Overwrite this.
      *
      * @return void
-     */
+     */    
     function challengeResponse()
     {
     }
-
+        
 }
 
 /**
@@ -129,9 +123,9 @@ class Crypt_CHAP extends PEAR
  *
  * Generate CHAP-MD5 Packets
  *
- * @package Crypt_CHAP
+ * @package Crypt_CHAP 
  */
-class Crypt_CHAP_MD5 extends Crypt_CHAP
+class Crypt_CHAP_MD5 extends Crypt_CHAP 
 {
 
     /**
@@ -141,7 +135,7 @@ class Crypt_CHAP_MD5 extends Crypt_CHAP
      * of the chapid, the plaintext password and the challenge.
      *
      * @return string
-     */
+     */ 
     function challengeResponse()
     {
         return pack('H*', md5(pack('C', $this->chapid) . $this->password . $this->challenge));
@@ -153,10 +147,10 @@ class Crypt_CHAP_MD5 extends Crypt_CHAP
  *
  * Generate MS-CHAPv1 Packets. MS-CHAP doesen't use the plaintext password, it uses the
  * NT-HASH wich is stored in the SAM-Database or in the smbpasswd, if you are using samba.
- * The NT-HASH is MD4(str2unicode(plaintextpass)).
+ * The NT-HASH is MD4(str2unicode(plaintextpass)). 
  * You need the hash extension for this class.
- *
- * @package Crypt_CHAP
+ * 
+ * @package Crypt_CHAP 
  */
 class Crypt_CHAP_MSv1 extends Crypt_CHAP
 {
@@ -166,32 +160,26 @@ class Crypt_CHAP_MSv1 extends Crypt_CHAP
      * @var  bool
      */
     var $flags = 1;
-
+    
     /**
      * Constructor
      *
      * Loads the hash extension
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->loadExtension('hash');
-    }
-
     function Crypt_CHAP_MSv1()
     {
-        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
-        self::__construct();
+        $this->Crypt_CHAP();
+        $this->loadExtension('hash');        
     }
-
+    
     /**
      * Generates the NT-HASH from the given plaintext password.
      *
      * @access public
      * @return string
      */
-    function ntPasswordHash($password = null)
+    function ntPasswordHash($password = null) 
     {
         if (isset($password)) {
             return pack('H*',hash('md4', $this->str2unicode($password)));
@@ -199,14 +187,14 @@ class Crypt_CHAP_MSv1 extends Crypt_CHAP
             return pack('H*',hash('md4', $this->str2unicode($this->password)));
         }
     }
-
+    
     /**
      * Converts ascii to unicode.
      *
      * @access public
      * @return string
      */
-    function str2unicode($str)
+    function str2unicode($str) 
     {
         $uni = '';
         $str = (string) $str;
@@ -215,32 +203,32 @@ class Crypt_CHAP_MSv1 extends Crypt_CHAP
             $uni .= sprintf("%X", $a);
         }
         return pack('H*', $uni);
-    }
-
+    }    
+    
     /**
-     * Generates the NT-Response.
+     * Generates the NT-Response. 
      *
      * @access public
      * @return string
-     */
-    function challengeResponse()
+     */  
+    function challengeResponse() 
     {
         return $this->_challengeResponse();
     }
-
+    
     /**
-     * Generates the NT-Response.
+     * Generates the NT-Response. 
      *
      * @access public
      * @return string
-     */
-    function ntChallengeResponse()
+     */  
+    function ntChallengeResponse() 
     {
         return $this->_challengeResponse(false);
-    }
-
+    }    
+    
     /**
-     * Generates the LAN-Manager-Response.
+     * Generates the LAN-Manager-Response. 
      *
      * @access public
      * @return string
@@ -369,14 +357,14 @@ class Crypt_CHAP_MSv1 extends Crypt_CHAP
         return pack('H*', $x);
 
     }
-
+    
     /**
-     * Generates the response-packet.
+     * Generates the response-packet. 
      *
      * @param  bool  $lm  wether including LAN-Manager-Response
      * @access private
      * @return string
-     */
+     */      
     function response($lm = false)
     {
         $ntresp = $this->ntChallengeResponse();
@@ -394,12 +382,12 @@ class Crypt_CHAP_MSv1 extends Crypt_CHAP
 /**
  * class Crypt_CHAP_MSv2
  *
- * Generate MS-CHAPv2 Packets. This version of MS-CHAP uses a 16 Bytes authenticator
+ * Generate MS-CHAPv2 Packets. This version of MS-CHAP uses a 16 Bytes authenticator 
  * challenge and a 16 Bytes peer Challenge. LAN-Manager responses no longer exists
- * in this version. The challenge is already a SHA1 challenge hash of both challenges
+ * in this version. The challenge is already a SHA1 challenge hash of both challenges 
  * and of the username.
- *
- * @package Crypt_CHAP
+ * 
+ * @package Crypt_CHAP 
  */
 class Crypt_CHAP_MSv2 extends Crypt_CHAP_MSv1
 {
@@ -420,19 +408,19 @@ class Crypt_CHAP_MSv2 extends Crypt_CHAP_MSv1
      * @var  string
      */
     var $authChallenge = null;
-
+    
     /**
      * Constructor
      *
      * Generates the 16 Bytes peer and authentication challenge
      * @return void
      */
-    public function __construct()
+    function Crypt_CHAP_MSv2()
     {
-        parent::__construct();
+        $this->Crypt_CHAP_MSv1();
         $this->generateChallenge('peerChallenge', 16);
         $this->generateChallenge('authChallenge', 16);
-    }
+    }    
 
     /**
      * Generates a hash from the NT-HASH.
@@ -440,35 +428,35 @@ class Crypt_CHAP_MSv2 extends Crypt_CHAP_MSv1
      * @access public
      * @param  string  $nthash The NT-HASH
      * @return string
-     */
-    function ntPasswordHashHash($nthash)
+     */    
+    function ntPasswordHashHash($nthash) 
     {
         return pack('H*',hash('md4', $nthash));
     }
-
+    
     /**
      * Generates the challenge hash from the peer and the authenticator challenge and
      * the username. SHA1 is used for this, but only the first 8 Bytes are used.
      *
      * @access public
      * @return string
-     */
-    function challengeHash()
+     */   
+    function challengeHash() 
     {
         return substr(pack('H*',hash('sha1', $this->peerChallenge . $this->authChallenge . $this->username)), 0, 8);
-    }
+    }    
 
     /**
-     * Generates the response.
+     * Generates the response. 
      *
      * @access public
      * @return string
-     */
-    function challengeResponse()
+     */  
+    function challengeResponse() 
     {
         $this->challenge = $this->challengeHash();
         return $this->_challengeResponse();
-    }
+    }    
 }
 
 
