@@ -106,7 +106,7 @@ class MoodleQuickForm {
 		static $formcounter = 1;
 
 		// TODO MDL-52313 Replace with the call to parent::__construct().
-		HTML_Common2::__construct($attributes);         // just merges attributes
+		//HTML_Common2::__construct($attributes);         // just merges attributes
 
 		$target = empty($target) ? array() : array('target' => $target);
 
@@ -142,6 +142,7 @@ class MoodleQuickForm {
          */
         $tracksubmit = false;           // default in QF1 was false - true in QF2
         $this->_qform2 = new HTML_QuickForm2($formName, $method, $attributes, $tracksubmit);
+        HTML_Common2::__construct($attributes);         // just merges attributes
 
 		// This is custom stuff for Moodle :
 		$oldclass=   $this->_qform2->getAttribute('class');
@@ -152,7 +153,7 @@ class MoodleQuickForm {
 		}
 		$this->_qform2->_reqHTML = '<img class="req" title="'.get_string('requiredelement', 'form').'" alt="'.get_string('requiredelement', 'form').'" src="'.$OUTPUT->pix_url('req') .'" />';
 		$this->_qform2->_advancedHTML = '<img class="adv" title="'.get_string('advancedelement', 'form').'" alt="'.get_string('advancedelement', 'form').'" src="'.$OUTPUT->pix_url('adv') .'" />';
-		$this->_qform2->setRequiredNote(get_string('somefieldsrequired', 'form', '<img alt="'.get_string('requiredelement', 'form').'" src="'.$OUTPUT->pix_url('req') .'" />'));
+		$this->setRequiredNote(get_string('somefieldsrequired', 'form', '<img alt="'.get_string('requiredelement', 'form').'" src="'.$OUTPUT->pix_url('req') .'" />'));
 	}
 
 	/**
@@ -1310,4 +1311,124 @@ require(["core/event", "jquery"], function(Event, $) {
 	{
 		return parent::isSubmitted() && (!$this->isFrozen());
 	}
+
+    /*
+     * Start of QF1 Functions to map to QF2 functionality
+     */
+
+
+        /**
+     * Sets required-note
+     *
+     * @param     string   $note        Message indicating some elements are required
+     * @since     1.1
+     * @access    public
+     * @return    void
+     */
+    function setRequiredNote($note)
+    {
+        //$this->_requiredNote = $note;
+        $this->setOption('required_note', $note);
+    } // en
+
+    /**
+     * Updates the passed attributes without changing the other existing attributes
+     * @param    mixed   $attributes     Either a typical HTML attribute string or an associative array
+     * @access   public
+     */
+    function updateAttributes($attributes)
+    {
+        $this->_updateAttrArray($this->_attributes, $this->_parseAttributes($attributes));
+    } // end func updateAttributes
+
+    /**
+     * Updates the attributes in $attr1 with the values in $attr2 without changing the other existing attributes
+     * @param    array   $attr1      Original attributes array
+     * @param    array   $attr2      New attributes array
+     * @access   private
+     */
+    function _updateAttrArray(&$attr1, $attr2)
+    {
+        if (!is_array($attr2)) {
+            return false;
+        }
+        foreach ($attr2 as $key => $value) {
+            $attr1[$key] = $value;
+        }
+    } // end func _updateAtrrArray
+
+    /**
+     * Returns a valid attributes array from either a string or array
+     * @param    mixed   $attributes     Either a typical HTML attribute string or an associative array
+     * @access   private
+     */
+    function _parseAttributes($attributes)
+    {
+        if (is_array($attributes)) {
+            $ret = array();
+            foreach ($attributes as $key => $value) {
+                if (is_int($key)) {
+                    $key = $value = strtolower($value);
+                } else {
+                    $key = strtolower($key);
+                }
+                $ret[$key] = $value;
+            }
+            return $ret;
+
+        } elseif (is_string($attributes)) {
+            $preg = "/(([A-Za-z_:]|[^\\x00-\\x7F])([A-Za-z0-9_:.-]|[^\\x00-\\x7F])*)" .
+                "([ \\n\\t\\r]+)?(=([ \\n\\t\\r]+)?(\"[^\"]*\"|'[^']*'|[^ \\n\\t\\r]*))?/";
+            if (preg_match_all($preg, $attributes, $regs)) {
+                for ($counter=0; $counter<count($regs[1]); $counter++) {
+                    $name  = $regs[1][$counter];
+                    $check = $regs[0][$counter];
+                    $value = $regs[7][$counter];
+                    if (trim($name) == trim($check)) {
+                        $arrAttr[strtolower(trim($name))] = strtolower(trim($name));
+                    } else {
+                        if (substr($value, 0, 1) == "\"" || substr($value, 0, 1) == "'") {
+                            $value = substr($value, 1, -1);
+                        }
+                        $arrAttr[strtolower(trim($name))] = trim($value);
+                    }
+                }
+                return $arrAttr;
+            }
+        }
+    } // end func _parseAttributes
+
+    /**
+     * Registers a new element type
+     *
+     * @param     string    $typeName   Name of element type
+     * @param     string    $include    Include path for element type
+     * @param     string    $className  Element class name
+     * @since     1.0
+     * @access    public
+     * @return    void
+     */
+    static function registerElementType($typeName, $include, $className)
+    {
+        $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES'][strtolower($typeName)] = array($include, $className);
+    } // end func registerElementType
+
+    /**
+     * Registers a new validation rule
+     *
+     * @param     string    $ruleName   Name of validation rule
+     * @param     string    $type       Either: 'regex', 'function' or 'rule' for an HTML_QuickForm_Rule object
+     * @param     string    $data1      Name of function, regular expression or HTML_QuickForm_Rule classname
+     * @param     string    $data2      Object parent of above function or HTML_QuickForm_Rule file path
+     * @since     1.0
+     * @access    public
+     * @return    void
+     */
+    static function registerRule($ruleName, $type, $data1, $data2 = null)
+    {
+        /*include_once('HTML/QuickForm/RuleRegistry.php');
+        $registry =& HTML_QuickForm_RuleRegistry::singleton();
+        $registry->registerRule($ruleName, $type, $data1, $data2);*/
+    } // end func registerRule
+
 }

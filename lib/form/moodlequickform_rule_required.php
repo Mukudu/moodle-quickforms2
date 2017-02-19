@@ -27,7 +27,8 @@
 
 require_once 'HTML/QuickForm2/Rule.php';
 
-class MoodleQuickForm_Rule_Required extends HTML_QuickForm_Rule {
+//class MoodleQuickForm_Rule_Required extends HTML_QuickForm_Rule {
+class MoodleQuickForm_Rule_Required {
 	/**
 	 * Checks if an element is not empty.
 	 * This is a server-side validation, it works for both text fields and editor fields

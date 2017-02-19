@@ -30,7 +30,7 @@
 require_once 'HTML/QuickForm2/Renderer.php';
 
 // class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
-class MoodleQuickForm_Renderer extends HTML_QuickForm2_Renderer{
+class MoodleQuickForm_Renderer{
 
 	/** @var array Element template array */
 	var $_elementTemplates;
@@ -105,7 +105,7 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm2_Renderer{
 
 				'nodisplay' => '');
 
-		parent::__construct();
+		//parent::__construct();  //BEN FIX THIS
 	}
 
 	/**
